@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Homeohelp.Server.Controllers
+namespace Homeohelp.Server.Features
 {
     [ApiController]
     [Route("api/[controller]")]

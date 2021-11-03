@@ -24,6 +24,7 @@ namespace Homeohelp.Server
                 .AddIdentity()
                 .AddJwtAuthentication(services.GetAppSettings(this.Configuration))
                 .AddDatabaseDeveloperPageExceptionFilter()
+                .AddApplicationServices()
                 .AddControllers();
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

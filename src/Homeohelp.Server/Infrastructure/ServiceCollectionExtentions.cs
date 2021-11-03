@@ -5,6 +5,8 @@
     using Data;
     using Data.Models;
 
+    using Homeohelp.Server.Features.Identity;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.Configuration;
@@ -51,6 +53,14 @@
                         ValidateAudience = false
                     };
                 });
+
+            return services;
+        }
+
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            services
+                .AddTransient<IIdentityService, IdentityService>();
 
             return services;
         }

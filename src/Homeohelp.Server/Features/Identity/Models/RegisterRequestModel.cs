@@ -1,4 +1,4 @@
-﻿namespace Homeohelp.Server.Models.Identity
+﻿namespace Homeohelp.Server.Features.Identity.Models
 {
     using System.ComponentModel.DataAnnotations;
 
