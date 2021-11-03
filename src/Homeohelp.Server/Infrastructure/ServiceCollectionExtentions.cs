@@ -15,6 +15,15 @@
 
     public static class ServiceCollectionExtentions
     {
+        public static AppSettings GetAppSettings(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var appSettingsSection = configuration.GetSection("ApplicationSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+            return appSettingsSection.Get<AppSettings>();
+        }
+
         public static IServiceCollection AddIdentity(this IServiceCollection services)
         {
             services
@@ -64,5 +73,6 @@
 
             return services;
         }
+
     }
 }

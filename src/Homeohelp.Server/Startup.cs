@@ -23,8 +23,8 @@ namespace Homeohelp.Server
                     .UseSqlServer(this.Configuration.GetDefaultConnectionString()))
                 .AddIdentity()
                 .AddJwtAuthentication(services.GetAppSettings(this.Configuration))
-                .AddDatabaseDeveloperPageExceptionFilter()
                 .AddApplicationServices()
+                .AddSwaggerGen()
                 .AddControllers();
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -35,6 +35,7 @@ namespace Homeohelp.Server
             }
 
             app
+                .UseSwaggerWithUI()
                 .UseRouting()
                 .UseCors(options => options
                     .AllowAnyOrigin()
