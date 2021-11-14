@@ -4,14 +4,16 @@ using Babyhelp.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Babyhelp.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211114121511_AddedEventsDoctorsAndPatients")]
+    partial class AddedEventsDoctorsAndPatients
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace Babyhelp.Server.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctor");
                 });
 
             modelBuilder.Entity("Babyhelp.Server.Data.Models.Event", b =>
@@ -74,7 +76,7 @@ namespace Babyhelp.Server.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Event");
                 });
 
             modelBuilder.Entity("Babyhelp.Server.Data.Models.Patient", b =>
@@ -92,7 +94,7 @@ namespace Babyhelp.Server.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patient");
                 });
 
             modelBuilder.Entity("Babyhelp.Server.Data.Models.User", b =>

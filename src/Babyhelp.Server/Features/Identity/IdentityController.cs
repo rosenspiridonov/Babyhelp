@@ -10,16 +10,16 @@
     public class IdentityController : ApiController
     {
         private readonly UserManager<User> userManager;
-        private readonly IIdentityService identityService;
+        private readonly IIdentityService identity;
         private readonly AppSettings appSettings;
 
         public IdentityController(
             UserManager<User> userManager,
-            IIdentityService identityService,
+            IIdentityService identity,
             IOptions<AppSettings> appSettings)
         {
             this.userManager = userManager;
-            this.identityService = identityService;
+            this.identity = identity;
             this.appSettings = appSettings.Value;
         }
 
@@ -61,7 +61,7 @@
                 return Unauthorized();
             }
 
-            var encryptedToken = this.identityService.GenerateJwtToken(
+            var encryptedToken = this.identity.GenerateJwtToken(
                 user.Id, 
                 user.UserName, 
                 this.appSettings.Secret);

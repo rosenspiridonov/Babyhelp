@@ -48,7 +48,7 @@ namespace Babyhelp.Server
                 {
                     endpoints.MapControllers();
                 })
-                .ApplyMigrations();
+                .PrepareDatabase();
         }
     }
 }

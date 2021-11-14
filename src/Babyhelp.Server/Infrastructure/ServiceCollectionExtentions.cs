@@ -1,11 +1,14 @@
 ﻿namespace Babyhelp.Server.Infrastructure
 {
+    using Features.Events;
+    using Features.Doctors;
+    using Features.Patients;
+    using Features.Identity;
+
     using System.Text;
 
     using Data;
     using Data.Models;
-
-    using Babyhelp.Server.Features.Identity;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Identity;
@@ -35,6 +38,7 @@
                    options.Password.RequireUppercase = false;
                    options.Password.RequireLowercase = false;
                })
+               .AddRoles<IdentityRole>()
                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             return services;
@@ -69,7 +73,10 @@
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services
-                .AddTransient<IIdentityService, IdentityService>();
+                .AddTransient<IIdentityService, IdentityService>()
+                .AddTransient<IEventsService, EventsService>()
+                .AddTransient<IDoctorsService, DoctorsService>()
+                .AddTransient<IPatientsService, PatientService>();
 
             return services;
         }
