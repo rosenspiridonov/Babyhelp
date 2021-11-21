@@ -1,11 +1,14 @@
 ﻿namespace Babyhelp.Server.Features.Events
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Babyhelp.Server.Data;
-    using Babyhelp.Server.Data.Models;
+    using Data;
+    using Data.Models;
+
+    using Features.Events.Models;
 
     public class EventsService : IEventsService
     {
@@ -17,19 +20,15 @@
         }
 
         public async Task<bool> Create(
-            string title, 
-            string description, 
-            DateTime start, 
-            DateTime end, 
-            int doctorId, 
-            int patientId)
+            string title,
+            string description,
+            DateTime start,
+            DateTime end,
+            int doctorId,
+            int patientId,
+            bool approved = false)
         {
-            var isValid = !this.
-                dbContext.
-                Events.
-                Any(x => (x.Start > start && x.Start < end
-                    || x.End > start && x.End < end)
-                    && (x.DoctorId == doctorId || x.PatientId == patientId));
+            bool isValid = IsEventValid(start, end, doctorId, patientId);
 
             if (!isValid)
             {
@@ -42,15 +41,188 @@
                 Description = description,
                 Start = start,
                 End = end,
-                Duration = start.Subtract(end),
+                Duration = end.Subtract(start),
                 DoctorId = doctorId,
-                PatientId = patientId
+                PatientId = patientId,
+                Approved = approved
             };
 
             await this.dbContext.Events.AddAsync(@event);
             await this.dbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public EventServiceModel ById(int id)
+            => this
+                .dbContext
+                .Events
+                .Where(x => x.Id == id)
+                .Select(x => new EventServiceModel()
+                {
+                    Title = x.Title,
+                    Description = x.Description,
+                    Start = x.Start,
+                    End = x.End,
+                    DoctorId = x.DoctorId,
+                    PatientId = x.PatientId,
+                    Approved = x.Approved
+                })
+                .FirstOrDefault();
+
+        public async Task<bool> Edit(
+            int id,
+            string title,
+            string description,
+            DateTime start,
+            DateTime end,
+            int doctorId,
+            int patientId,
+            bool approved = false)
+        {
+            var @event = await this
+                .dbContext
+                .Events
+                .FindAsync(id);
+
+            if (@event == null)
+            {
+                return false;
+            }
+
+            bool isValid = IsEventValid(start, end, doctorId, patientId);
+
+            if (!isValid)
+            {
+                return false;
+            }
+
+            @event.Title = title;
+            @event.Description = description;
+            @event.Start = start;
+            @event.End = end;
+            @event.Duration = end.Subtract(start);
+            @event.DoctorId = doctorId;
+            @event.PatientId = patientId;
+            @event.Approved = approved;
+
+            await dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var @event = await this
+                .dbContext
+                .Events
+                .FindAsync(id);
+
+            if (@event == null)
+            {
+                return false;
+            }
+
+            this.dbContext.Events.Remove(@event);
+            await this.dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public List<EventServiceModel> ByDoctor(int doctorId)
+            => this
+                .dbContext
+                .Events
+                .Where(x => x.DoctorId == doctorId)
+                .Select(x => new EventServiceModel()
+                {
+                    Title = x.Title,
+                    Description = x.Description,
+                    Start = x.Start,
+                    End = x.End,
+                    DoctorId = x.DoctorId,
+                    PatientId = x.PatientId,
+                    Approved = x.Approved
+                })
+                .ToList();
+
+        public EventServiceModel ByDoctor(int doctorId, DateTime startTime)
+                => this
+                    .dbContext
+                    .Events
+                    .Where(x => x.DoctorId == doctorId && x.Start == startTime)
+                    .Select(x => new EventServiceModel()
+                    {
+                        Title = x.Title,
+                        Description = x.Description,
+                        Start = x.Start,
+                        End = x.End,
+                        DoctorId = x.DoctorId,
+                        PatientId = x.PatientId,
+                        Approved = x.Approved
+                    })
+                    .FirstOrDefault();
+
+        public List<EventServiceModel> ByDoctorAndPatient(int doctorId, int patientId)
+                => this
+                    .dbContext
+                    .Events
+                    .Where(x => x.DoctorId == doctorId && x.PatientId == patientId)
+                    .Select(x => new EventServiceModel()
+                    {
+                        Title = x.Title,
+                        Description = x.Description,
+                        Start = x.Start,
+                        End = x.End,
+                        DoctorId = x.DoctorId,
+                        PatientId = x.PatientId,
+                        Approved = x.Approved
+                    })
+                    .ToList();
+
+        public List<EventServiceModel> ByPatient(int patientId)
+                => this
+                    .dbContext
+                    .Events
+                    .Where(x => x.PatientId == patientId)
+                    .Select(x => new EventServiceModel()
+                    {
+                        Title = x.Title,
+                        Description = x.Description,
+                        Start = x.Start,
+                        End = x.End,
+                        DoctorId = x.DoctorId,
+                        PatientId = x.PatientId,
+                        Approved = x.Approved
+                    })
+                    .ToList();
+
+        public EventServiceModel ByPatient(int patientId, DateTime startTime)
+                 => this
+                    .dbContext
+                    .Events
+                    .Where(x => x.PatientId == patientId && x.Start == startTime)
+                    .Select(x => new EventServiceModel()
+                    {
+                        Title = x.Title,
+                        Description = x.Description,
+                        Start = x.Start,
+                        End = x.End,
+                        DoctorId = x.DoctorId,
+                        PatientId = x.PatientId,
+                        Approved = x.Approved
+                    })
+                    .FirstOrDefault();
+
+        // TODO: Fix this method. It is not working properly
+        private bool IsEventValid(DateTime start, DateTime end, int doctorId, int patientId)
+        {
+            return this.
+                dbContext.
+                Events.
+                Any(x => ((x.Start > start && x.Start < end)
+                    || (x.End > start && x.End < end))
+                    && (x.DoctorId == doctorId || x.PatientId == patientId));
         }
     }
 }

@@ -6,11 +6,11 @@
     using Data;
     using Data.Models;
 
-    public class PatientService : IPatientsService
+    public class PatientsService : IPatientsService
     {
         private readonly ApplicationDbContext dbContext;
 
-        public PatientService(ApplicationDbContext dbContext)
+        public PatientsService(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

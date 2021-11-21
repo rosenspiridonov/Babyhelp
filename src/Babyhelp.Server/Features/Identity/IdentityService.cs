@@ -8,12 +8,20 @@
     using System.Text;
     using System.Threading.Tasks;
 
+    using Babyhelp.Server.Data;
     using Babyhelp.Server.Data.Models;
 
     using Microsoft.IdentityModel.Tokens;
 
     public class IdentityService : IIdentityService
     {
+        private readonly ApplicationDbContext dbContext;
+
+        public IdentityService(ApplicationDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
+
         public string GenerateJwtToken(string userId, string username, string appSecret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -31,6 +39,36 @@
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public bool IsDoctor(int doctorId)
+        {
+            var doctor = this
+                .dbContext
+                .Doctors
+                .FirstOrDefault(x => x.Id == doctorId);
+
+            if (doctor == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool IsPatient(int patientId)
+        {
+            var patient = this
+                .dbContext
+                .Patients
+                .FirstOrDefault(x => x.Id == patientId);
+
+            if (patient == null)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

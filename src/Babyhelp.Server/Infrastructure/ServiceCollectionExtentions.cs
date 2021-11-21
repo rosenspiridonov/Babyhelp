@@ -76,7 +76,7 @@
                 .AddTransient<IIdentityService, IdentityService>()
                 .AddTransient<IEventsService, EventsService>()
                 .AddTransient<IDoctorsService, DoctorsService>()
-                .AddTransient<IPatientsService, PatientService>();
+                .AddTransient<IPatientsService, PatientsService>();
 
             return services;
         }

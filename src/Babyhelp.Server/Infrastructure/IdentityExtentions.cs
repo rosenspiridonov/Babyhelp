@@ -3,11 +3,15 @@
     using System.Linq;
     using System.Security.Claims;
 
+    using Babyhelp.Server.Data;
+    using Babyhelp.Server.Data.Models;
+
+    using Microsoft.AspNetCore.Identity;
+
     using static WebConstants;
 
     public static class IdentityExtentions
     {
-
         public static string GetId(this ClaimsPrincipal user)
             => user
                 .Claims
@@ -21,5 +25,9 @@
         public static bool IsPatient(this ClaimsPrincipal user)
             => user
                 .IsInRole(PatientRoleName);
+
+        public static bool IsAdmin(this ClaimsPrincipal user)
+           => user
+               .IsInRole(AdminRoleName);
     }
 }
