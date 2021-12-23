@@ -11,48 +11,47 @@
     using Microsoft.AspNetCore.Identity;
 
     using static WebConstants;
+    using Babyhelp.Server.Features.Identity;
 
     [Authorize]
     public class DoctorsController : ApiController
     {
         private readonly IDoctorsService doctors;
         private readonly UserManager<User> userManager;
+        private readonly IIdentityService identity;
 
         public DoctorsController(
             IDoctorsService doctors,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IIdentityService identity)
         {
             this.doctors = doctors;
             this.userManager = userManager;
+            this.identity = identity;
         }
 
         [HttpPost]
-        [Route(nameof(Create))]
-        public async Task<IActionResult> Create(DoctorRequestModel model)
+        [Route(nameof(Create) + "/" + "{userId}")]
+        public async Task<IActionResult> Create(/*DoctorRequestModel model*/string userId)
         {
-            if (this.User.IsDoctor())
+            // TODO: Check if user is admin
+
+            var inputUser = await this.userManager.FindByIdAsync(userId);
+            var isDoctor = await this.userManager.IsInRoleAsync(inputUser, DoctorRoleName);
+
+            if (isDoctor)
             {
-                return BadRequest("Current user is already a doctor");
+                return BadRequest("This user is alredy a doctor");
             }
 
-            if (this.User.IsPatient())
-            {
-                return BadRequest("Current user is a patient");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            bool created = await this.doctors.Create(this.User.GetId());
+            bool created = await this.doctors.Create(userId);
 
             if (!created)
             {
                 return BadRequest();
             }
 
-            var user = await this.userManager.GetUserAsync(this.User);
+            var user = await this.userManager.FindByIdAsync(userId);
             await this.userManager.AddToRoleAsync(user, DoctorRoleName);
 
             return Ok();

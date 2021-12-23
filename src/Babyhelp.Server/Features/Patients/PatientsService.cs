@@ -17,10 +17,10 @@
 
         public async Task<bool> Create(string userId)
         {
-            if (!this.dbContext.Users.Any(x => x.Id == userId))
-            {
-                return false;
-            }
+            //if (!this.dbContext.Users.Any(x => x.Id == userId))
+            //{
+            //    return false;
+            //}
 
             var patient = new Patient()
             {

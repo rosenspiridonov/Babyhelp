@@ -7,19 +7,27 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.Options;
 
+    using static WebConstants;
+    using Babyhelp.Server.Features.Patients;
+    using Babyhelp.Server.Infrastructure;
+    using System.Linq;
+
     public class IdentityController : ApiController
     {
         private readonly UserManager<User> userManager;
         private readonly IIdentityService identity;
+        private readonly IPatientsService patients;
         private readonly AppSettings appSettings;
 
         public IdentityController(
             UserManager<User> userManager,
             IIdentityService identity,
-            IOptions<AppSettings> appSettings)
+            IOptions<AppSettings> appSettings,
+            IPatientsService patients)
         {
             this.userManager = userManager;
             this.identity = identity;
+            this.patients = patients;
             this.appSettings = appSettings.Value;
         }
 
@@ -35,12 +43,20 @@
 
             var result = await this.userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
+            if (result.Errors.Any())
             {
-                return Ok();
+                return BadRequest(result.Errors);
             }
 
-            return BadRequest(result.Errors);
+            bool created = await this.patients.Create(user.Id);
+
+            if (!created)
+            {
+                return BadRequest("Error in creating patient");
+            }
+
+            await this.userManager.AddToRoleAsync(user, PatientRoleName);
+            return Ok();
         }
 
         [HttpPost]

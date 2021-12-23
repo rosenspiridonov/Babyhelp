@@ -22,6 +22,11 @@
                 return false;
             }
 
+            if (this.dbContext.Doctors.Any(x => x.UserId == userId))
+            {
+                return false;
+            }
+
             var doctor = new Doctor()
             {
                 UserId = userId
