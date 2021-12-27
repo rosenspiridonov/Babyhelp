@@ -214,15 +214,21 @@
                     })
                     .FirstOrDefault();
 
-        // TODO: Fix this method. It is not working properly
+        // TODO: Test if this works correctly
         private bool IsEventValid(DateTime start, DateTime end, int doctorId, int patientId)
         {
-            return this
+            var doctorsEvents = this
                 .dbContext
                 .Events
-                .Any(x => ((x.Start > start && x.Start < end)
-                    || (x.End > start && x.End < end))
-                    && (x.DoctorId == doctorId || x.PatientId == patientId));
+                .Where(e => e.DoctorId == doctorId)
+                .ToList();
+
+            if (doctorsEvents.All(e => (start <= e.Start && end <= e.Start) || (start >= e.End && end >= e.End)))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -40,7 +40,7 @@
 
             if (model.Start > model.End)
             {
-                return BadRequest("Start time cannot be after end time");
+                return BadRequest("Start time cannot be after the end time");
             }
             
             // Check if doctorId is valid
@@ -58,7 +58,7 @@
 
             bool approved = this.User.IsDoctor() || this.User.IsAdmin();
 
-            var created = await this.events.Create(
+        var created = await this.events.Create(
                 model.Title,
                 model.Description,
                 model.Start,
