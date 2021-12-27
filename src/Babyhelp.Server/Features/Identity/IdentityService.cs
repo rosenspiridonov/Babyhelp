@@ -22,7 +22,7 @@
             this.dbContext = dbContext;
         }
 
-        public string GenerateJwtToken(string userId, string username, string appSecret)
+        public string GenerateJwtToken(string userId, string username, IList<string> roles, string appSecret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(appSecret);
@@ -37,6 +37,12 @@
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+
+            foreach (var role in roles)
+            {
+                tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, role));
+            }
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }

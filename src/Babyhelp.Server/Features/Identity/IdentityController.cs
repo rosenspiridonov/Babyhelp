@@ -77,9 +77,12 @@
                 return Unauthorized();
             }
 
+            var roles = await userManager.GetRolesAsync(user);
+
             var encryptedToken = this.identity.GenerateJwtToken(
                 user.Id, 
-                user.UserName, 
+                user.UserName,
+                roles,
                 this.appSettings.Secret);
 
             return new LoginResponseModel

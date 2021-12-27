@@ -32,13 +32,18 @@
 
         [HttpPost]
         [Route(nameof(Create) + "/" + "{userId}")]
+        [Authorize(Roles = AdminRoleName)]
         public async Task<IActionResult> Create(/*DoctorRequestModel model*/string userId)
         {
-            // TODO: Check if user is admin
-
             var inputUser = await this.userManager.FindByIdAsync(userId);
-            var isDoctor = await this.userManager.IsInRoleAsync(inputUser, DoctorRoleName);
 
+            if (inputUser == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            var isDoctor = await this.userManager.IsInRoleAsync(inputUser, DoctorRoleName);
+           
             if (isDoctor)
             {
                 return BadRequest("This user is alredy a doctor");

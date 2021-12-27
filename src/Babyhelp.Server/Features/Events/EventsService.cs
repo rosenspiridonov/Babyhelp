@@ -217,10 +217,10 @@
         // TODO: Fix this method. It is not working properly
         private bool IsEventValid(DateTime start, DateTime end, int doctorId, int patientId)
         {
-            return this.
-                dbContext.
-                Events.
-                Any(x => ((x.Start > start && x.Start < end)
+            return this
+                .dbContext
+                .Events
+                .Any(x => ((x.Start > start && x.Start < end)
                     || (x.End > start && x.End < end))
                     && (x.DoctorId == doctorId || x.PatientId == patientId));
         }
