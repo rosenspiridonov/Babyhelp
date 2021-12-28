@@ -218,5 +218,19 @@
 
             return model;
         }
+
+        [HttpPost]
+        [Route(nameof(Approve) + "/{id}")]
+        public async Task<IActionResult> Approve(int id)
+        {
+            var approved = await this.events.Approve(id);
+
+            if (!approved)
+            {
+                return BadRequest("Event does not exists");
+            }
+
+            return Ok();
+        }
     }
 }

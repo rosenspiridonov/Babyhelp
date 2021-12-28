@@ -39,5 +39,7 @@
         EventServiceModel ByPatient(int patientId, DateTime startTime);
 
         List<EventServiceModel> ByDoctorAndPatient(int doctorId, int patientId);
+
+        Task<bool> Approve(int id);
     }
 }

@@ -230,5 +230,24 @@
 
             return false;
         }
+
+        public async Task<bool> Approve(int id)
+        {
+            var @event = this
+                .dbContext
+                .Events
+                .Find(id);
+
+            if (@event == null)
+            {
+                return false;
+            }
+
+            @event.Approved = true;
+
+            await this.dbContext.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
